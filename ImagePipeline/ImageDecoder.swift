@@ -36,7 +36,7 @@ public struct ImageDecoder: ImageDecoding {
         return nil
       }
 
-      config.output.colorspace = config.input.has_alpha != 0 ? MODE_rgbA : MODE_RGB
+      config.output.colorspace = config.input.has_alpha != 0 ? MODE_bgrA : MODE_RGB
 
       if size.width > 0, size.height > 0,
         Int(size.width) < config.input.width, Int(size.height) < config.input.height {
@@ -63,8 +63,9 @@ public struct ImageDecoder: ImageDecoding {
         return nil
       }
 
-      let bitmapInfo: CGBitmapInfo = config.input.has_alpha != 0 ?
-        [CGBitmapInfo.byteOrder32Big, CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)] : CGBitmapInfo(rawValue: 0)
+      let bitmapInfo: CGBitmapInfo = config.input.has_alpha != 0
+        ? [.byteOrder32Little, .init(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)]
+        : [.byteOrder32Big]
       let components: size_t = config.input.has_alpha != 0 ? 4 : 3
 
       guard let cgImage = CGImage(width: Int(width),
